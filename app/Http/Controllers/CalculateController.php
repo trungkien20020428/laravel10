@@ -12,6 +12,11 @@ use Illuminate\Validation\ValidationException;
 
 class CalculateController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
     public function execute(Request $request): Application|Response|\Illuminate\Contracts\Foundation\Application|ResponseFactory
     {
         $this->validateRequest($request);

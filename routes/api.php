@@ -1,11 +1,11 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CalculateController;
+use App\Http\Controllers\exampleAPI;
 use App\Http\Controllers\ProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\exampleAPI;
-use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,15 +27,14 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
-
 });
 Route::controller(ProductsController::class)->group(function () {
     Route::get('products', 'index');
     Route::delete('product/{id}', 'destroy');
 });
 
-Route::get('/example', [exampleAPI::class,'success']);
+Route::get('/example', [exampleAPI::class, 'success']);
 
 Route::controller(CalculateController::class)->group(function () {
-    Route::get('/calculate', 'execute')->middleware('auth:api');
+    Route::get('calculate', 'execute');
 });
