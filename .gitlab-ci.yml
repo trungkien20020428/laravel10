@@ -1,0 +1,76 @@
+image: docker:19
+
+services:
+  - docker:dind
+
+variables:
+  IMAGE_NAME: "registry.gitlab.com/200204281/laravel10"
+  DOCKER_DRIVER: overlay2
+  REGISTRY_URL: $CI_REGISTRY
+  REGISTRY_USER: $CI_REGISTRY_USER
+  REGISTRY_PASSWORD: $CI_REGISTRY_PASSWORD
+
+stages:
+  - build
+  - test
+  - standard-check
+  - deploy
+  - integrate-test
+
+before_script:
+  - whoami
+  - pwd
+  - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY_URL
+  - cp .env.example .env
+
+build:
+  stage: build
+  only:
+    - master
+    - develop
+    - merge_requests
+  script:
+    - docker version
+    - docker-compose --version
+    - docker-compose build
+    - docker-compose push
+    - echo "Pushed images"
+
+test:
+  stage: test
+  image: $IMAGE_NAME:latest
+  only:
+    - master
+    - develop
+    - merge_requests
+  script:
+    - docker-compose pull
+    - docker-compose down -v
+    - docker-compose up -d
+    - docker-compose exec -T php composer install
+    - docker-compose exec -T php vendor/bin/phpunit --log-junit report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+
+code_quality:
+  stage: standard-check
+  image: composer:2
+  only:
+    - develop
+    - master
+    - merge_requests
+  script:
+    - docker-compose exec -T php composer install
+    - docker-compose exec -T php vendor/bin/phpcs
+
+blackbox:
+  stage: integrate-test
+  only:
+    - develop
+    - master
+    - merge_requests
+  script:
+    - docker-compose up -d
+    - python3 blackbox.py

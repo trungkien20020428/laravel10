@@ -38,3 +38,7 @@ Route::get('/example', [exampleAPI::class, 'success']);
 Route::controller(CalculateController::class)->group(function () {
     Route::get('calculate', 'execute');
 });
+
+Route::get('test',function (){
+    return "this is test";
+});

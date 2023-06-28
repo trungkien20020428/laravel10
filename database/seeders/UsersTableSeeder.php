@@ -14,7 +14,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $salt = 10;
+
         DB::table('users')->insert([
             'name' => Str::random(10),
             'email' => 'trungkien02pl@gmail.com',
