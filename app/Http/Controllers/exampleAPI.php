@@ -18,6 +18,7 @@ class exampleAPI extends Controller
     ) {
         $this->success = $success;
         $this->code = $code;
+        $this->middleware('auth:api');
     }
 
     public function success(): \Illuminate\Foundation\Application|Response|Application|ResponseFactory

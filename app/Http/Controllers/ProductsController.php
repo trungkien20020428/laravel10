@@ -11,8 +11,19 @@ class ProductsController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
     public function index()
     {
+        $products = Products::all();
+
+        return response()->json(
+            ['status' => 'success',
+            'product' => $products, ]
+        );
     }
 
     /**
@@ -53,7 +64,16 @@ class ProductsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Products $products)
+    public function destroy($id)
     {
+        $product = Products::destroy($id);
+
+        return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'Product deleted successfully',
+                'todo' => $product,
+            ]
+        );
     }
 }
