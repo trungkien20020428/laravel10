@@ -39,7 +39,7 @@ Route::controller(ProductsController::class)->group(function () {
 
 Route::get('/example', [exampleAPI::class, 'success']);
 
-Route::middleware(\App\Http\Middleware\Role::class)->group(function () {
+Route::middleware(\App\Http\Middleware\PermissionMiddleware::class)->group(function () {
     Route::controller(CalculateController::class)->group(function () {
         Route::get('calculate', 'execute');
     });

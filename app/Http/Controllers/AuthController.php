@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class AuthController extends Controller
 {
@@ -16,22 +17,24 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    public function login(Request $request): JsonResponse
+    public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
-        $credentials = $request->only('email', 'password');
 
-        // get data in db
-        $userPermission = [
-            'api/calculate',
-            'api/redis',
-        ];
+        $email = $request->get('email');
+        $userInformation = Redis::get('user_email'.$email);
 
-        // $credentials += $userPermission;
+        if (isset($userInformation)) {
+            $data = json_encode($userInformation);
+            response()->json($data);
+        }
 
+        $password = $request->get('password');
+
+        $credentials = ['email' => $email, 'password' => $password];
         $token = Auth::attempt($credentials);
 
         if (!$token) {
@@ -40,19 +43,31 @@ class AuthController extends Controller
                 'message' => 'Unauthorized',
             ], 401);
         }
-        Log::debug(auth()->attempt($credentials));
+
 
         $user = Auth::user();
-        $user->permissionsArray = $userPermission;
 
-        return response()->json([
+        // load permission data from database
+        $permission = [
+            'api/calculate',
+        ];
+
+        Redis::set('user_permission_'.$user['id'],json_encode($permission));
+        Redis::expire('user_permission_'.$user['id'], env('REDIS_TTL'));
+
+        $response = [
             'status' => 'success',
             'user' => $user,
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
             ],
-        ]);
+        ];
+
+        Redis::set('user_email'.$email, json_encode($response));
+        Redis::expire('user_email'.$email, env('REDIS_TTL'));
+
+        return response()->json($response);
     }
 
     public function register(Request $request): JsonResponse
