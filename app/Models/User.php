@@ -15,6 +15,11 @@ class User extends Authenticatable implements JWTSubject
     use HasFactory;
     use Notifiable;
 
+    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
     /**
      * The attributes that are mass assignable.
      *

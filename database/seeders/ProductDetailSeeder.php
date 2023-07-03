@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ProductDetailSeeder extends Seeder
@@ -12,6 +11,5 @@ class ProductDetailSeeder extends Seeder
      */
     public function run(): void
     {
-        //
     }
 }

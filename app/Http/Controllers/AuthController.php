@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -23,18 +24,28 @@ class AuthController extends Controller
         ]);
         $credentials = $request->only('email', 'password');
 
+        // get data in db
+        $userPermission = [
+            'api/calculate',
+            'api/redis',
+        ];
+
+        // $credentials += $userPermission;
+
         $token = Auth::attempt($credentials);
+
         if (!$token) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized',
             ], 401);
         }
+        Log::debug(auth()->attempt($credentials));
 
         $user = Auth::user();
+        $user->permissionsArray = $userPermission;
 
         return response()->json([
-            'credentials' => $credentials,
             'status' => 'success',
             'user' => $user,
             'authorisation' => [

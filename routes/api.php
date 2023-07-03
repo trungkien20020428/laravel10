@@ -5,6 +5,7 @@ use App\Http\Controllers\CalculateController;
 use App\Http\Controllers\exampleAPI;
 use App\Http\Controllers\ProductsController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +29,9 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
 });
+Route::get('redis', function (Request $request) {
+    Redis::set('1', 'Taylor');
+});
 Route::controller(ProductsController::class)->group(function () {
     Route::get('products', 'index');
     Route::delete('product/{id}', 'destroy');
@@ -35,10 +39,12 @@ Route::controller(ProductsController::class)->group(function () {
 
 Route::get('/example', [exampleAPI::class, 'success']);
 
-Route::controller(CalculateController::class)->group(function () {
-    Route::get('calculate', 'execute');
+Route::middleware(\App\Http\Middleware\Role::class)->group(function () {
+    Route::controller(CalculateController::class)->group(function () {
+        Route::get('calculate', 'execute');
+    });
 });
 
-Route::get('test',function (){
-    return "this is test";
-});
+Route::get('test', function () {
+    return 'this is test';
+})->middleware('auth:api')->middleware(\App\Http\Middleware\Role::class);

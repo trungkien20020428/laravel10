@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreProductDetailRequest;
-use App\Http\Requests\UpdateProductDetailRequest;
-use App\Models\ProductDetail;
+use App\Http\Requests\StorePermissionRequest;
+use App\Http\Requests\UpdatePermissionRequest;
+use App\Models\Permission;
 
-class ProductDetailController extends Controller
+class PermissionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -25,35 +25,35 @@ class ProductDetailController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductDetailRequest $request)
+    public function store(StorePermissionRequest $request)
     {
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(ProductDetail $productDetail)
+    public function show(Permission $permission)
     {
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ProductDetail $productDetail)
+    public function edit(Permission $permission)
     {
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductDetailRequest $request, ProductDetail $productDetail)
+    public function update(UpdatePermissionRequest $request, Permission $permission)
     {
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ProductDetail $productDetail)
+    public function destroy(Permission $permission)
     {
     }
 }
