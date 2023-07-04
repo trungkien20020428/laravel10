@@ -7,7 +7,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 class AuthController extends Controller
@@ -44,7 +43,6 @@ class AuthController extends Controller
             ], 401);
         }
 
-
         $user = Auth::user();
 
         // load permission data from database
@@ -52,7 +50,7 @@ class AuthController extends Controller
             'api/calculate',
         ];
 
-        Redis::set('user_permission_'.$user['id'],json_encode($permission));
+        Redis::set('user_permission_'.$user['id'], json_encode($permission));
         Redis::expire('user_permission_'.$user['id'], env('REDIS_TTL'));
 
         $response = [
