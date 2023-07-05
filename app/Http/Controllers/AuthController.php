@@ -7,7 +7,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redis;
 
 class AuthController extends Controller
 {
@@ -24,12 +23,6 @@ class AuthController extends Controller
         ]);
 
         $email = $request->get('email');
-        $userInformation = Redis::get('user_email'.$email);
-
-        if (isset($userInformation)) {
-            $data = json_encode($userInformation);
-            response()->json($data);
-        }
 
         $password = $request->get('password');
 
@@ -45,14 +38,6 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        // load permission data from database
-        $permission = [
-            'api/calculate',
-        ];
-
-        Redis::set('user_permission_'.$user['id'], json_encode($permission));
-        Redis::expire('user_permission_'.$user['id'], env('REDIS_TTL'));
-
         $response = [
             'status' => 'success',
             'user' => $user,
@@ -61,9 +46,6 @@ class AuthController extends Controller
                 'type' => 'bearer',
             ],
         ];
-
-        Redis::set('user_email'.$email, json_encode($response));
-        Redis::expire('user_email'.$email, env('REDIS_TTL'));
 
         return response()->json($response);
     }
